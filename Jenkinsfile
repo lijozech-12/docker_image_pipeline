@@ -8,7 +8,12 @@ pipeline{
         dockerhub=credentials('dockerhub')
     }
 
-    stage('build image')
+    stage('Approval')
+    {
+        
+    }
+
+    stage('Docker build')
     {
         when{
             branch "prod"
@@ -17,7 +22,7 @@ pipeline{
             sh 'docker build -t capstone-img:1.01'
         }
     }
-    stage('pushing to dockerhub')
+    stage('Approval')
     {
         when{
             branch "prod"
@@ -26,7 +31,15 @@ pipeline{
             sh 'docker tag capstone-img:1.01 naincykumari123/capston:1.01'
             sh 'echo $dockerhub_PSW | docker login -u $dockerhub_USR --password-stdin'
 
-            sh 'docker push '
+        }
+    }
+    stage('Docker push')
+    {
+        when{
+            branch "prod"
+        }
+        steps{
+            sh 'docker push'
         }
     }
 }
