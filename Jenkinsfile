@@ -8,25 +8,38 @@ pipeline{
         dockerhub=credentials('dockerhub')
     }
 
-    stage('build image')
+    stage('Approval')
+    {
+
+    }
+
+    stage('Docker build')
     {
         when{
             branch "prod"
         }
         steps{
-            sh 'docker build -t capstone-img:1.01'
+            sh 'docker build -t nginxapp:1.1'
         }
     }
-    stage('pushing to dockerhub')
+    stage('Approval')
     {
         when{
             branch "prod"
         }
         steps{
-            sh 'docker tag capstone-img:1.01 naincykumari123/capston:1.01'
+            sh 'docker tag nginxapp:1.1 lijozech123/nginxapp:1.1'
             sh 'echo $dockerhub_PSW | docker login -u $dockerhub_USR --password-stdin'
 
-            sh 'docker push '
+        }
+    }
+    stage('Docker push')
+    {
+        when{
+            branch "prod"
+        }
+        steps{
+            sh 'docker push'
         }
     }
 }
