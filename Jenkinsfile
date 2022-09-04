@@ -10,7 +10,7 @@ pipeline{
 
     stage('Approval')
     {
-        
+
     }
 
     stage('Docker build')
@@ -19,7 +19,7 @@ pipeline{
             branch "prod"
         }
         steps{
-            sh 'docker build -t capstone-img:1.01'
+            sh 'docker build -t nginxapp:1.1'
         }
     }
     stage('Approval')
@@ -28,7 +28,7 @@ pipeline{
             branch "prod"
         }
         steps{
-            sh 'docker tag capstone-img:1.01 naincykumari123/capston:1.01'
+            sh 'docker tag nginxapp:1.1 lijozech123/nginxapp:1.1'
             sh 'echo $dockerhub_PSW | docker login -u $dockerhub_USR --password-stdin'
 
         }
