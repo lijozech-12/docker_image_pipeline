@@ -1,45 +1,34 @@
-pipeline{
-    agent any
-    tools {
-        maven 'maven'
-        jdk 'Java'
+pipeline {
+    agent any 
+    environment {
+    DOCKERHUB_CREDENTIALS = credentials('dockerhub_access')
     }
-    environment{
-        dockerhub=credentials('dockerhub')
-    }
+    stages { 
+        stage('SCM Checkout') {
+            steps{
+            git 'https://github.com/lijozech-12/docker_image_pipeline.git'
+            }
+        }
 
-    stage('Approval')
-    {
-
-    }
-
-    stage('Docker build')
-    {
-        when{
-            branch "prod"
+        stage('Build docker image') {
+            steps {  
+                sh 'docker build -t nginxapp/nginxbuild:$BUILD_NUMBER .'
+            }
         }
-        steps{
-            sh 'docker build -t nginxapp:1.1'
+        stage('login to dockerhub') {
+            steps{
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+            }
         }
-    }
-    stage('Approval')
-    {
-        when{
-            branch "prod"
+        stage('push image') {
+            steps{
+                sh 'docker push nginxapp/nginxbuild:$BUILD_NUMBER'
+            }
         }
-        steps{
-            sh 'docker tag nginxapp:1.1 lijozech123/nginxapp:1.1'
-            sh 'echo $dockerhub_PSW | docker login -u $dockerhub_USR --password-stdin'
-
-        }
-    }
-    stage('Docker push')
-    {
-        when{
-            branch "prod"
-        }
-        steps{
-            sh 'docker push'
+}
+post {
+        always {
+            sh 'docker logout'
         }
     }
 }
